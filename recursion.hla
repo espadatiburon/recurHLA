@@ -1,0 +1,67 @@
+program factoral;
+#include( "stdlib.hhf" );
+static
+	myInput: int8 := 0;
+	
+procedure factRec( x: int8 ); @nodisplay; @noframe; 
+static
+	dreturnAddress: dword;
+	myResult: int16 := 1; 
+	tempEDX: dword := 0;
+	tempECX: dword := 0;
+	tempEAX: dword := 0;
+begin factRec;
+
+mov(EDX, tempEDX);
+mov(ECX, tempECX);
+mov(EAX, tempEAX);
+pop(dreturnAddress);
+pop(EDX);
+mov(DL, x);
+push(dreturnAddress);
+push(tempEDX);
+push(tempECX);
+push(tempEAX);
+
+cmp(x,1);
+jle xIsOne;
+jmp recursiveMul;
+
+xIsOne:
+	mov(1, myResult);
+	jmp endRecur;
+	
+recursiveMul:
+	
+	mov(x, DL);
+	push(EDX);
+	dec(x);
+	mov(x, DL);
+	push(EDX);
+	call factRec;
+	pop(ECX);
+	mov(BL, AL);
+	mul(CL);
+	mov(AX, myResult);
+	
+endRecur:
+	mov(myResult, BX);
+	pop(EAX);
+	pop(ECX);
+	pop(EDX);
+	ret();
+	
+end factRec;
+
+begin factoral;
+
+stdout.put("Gimme an x: ");
+stdin.get(myInput);
+mov(myInput, DL);
+push(EDX);
+
+call factRec;
+
+stdout.puti16(BX);
+
+end factoral;
